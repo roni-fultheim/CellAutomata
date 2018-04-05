@@ -1,0 +1,30 @@
+.root {
+    -fx-background-image: url("background.jpg")
+}
+
+.label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+.button {
+     -fx-text-fill: black;
+     -fx-font-weight: bold;
+     -fx-background-color: linear-gradient(#e6b800, #ffaa00);
+}
+
+.choice-box .context-menu { -fx-background-color: black; }
+
+.choice-box .menu-item:focused { -fx-background-color: orange; }
+
+.choice-box .menu-item > .label { -fx-text-fill: white; }
+
+.choice-box .menu-item:focused > .label { -fx-text-fill: black; }
+
+.choice-box {
+      -fx-background-color: black;
+      -fx-mark-color: orange;
+}
+
+.choice-box > .label { -fx-text-fill: white; }

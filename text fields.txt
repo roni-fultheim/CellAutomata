@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1" 
+fx:controller="application.MenuController" alignment="center" hgap="10" vgap="10">
+    <padding><Insets top="25" right="25" bottom="10" left="25"></Insets></padding>
+     <Text text="Cell Automata"
+     GridPane.rowIndex="0" GridPane.columnIndex="0"
+     GridPane.columnSpan="2"/>
+     
+     <Label text="d (start as empty/tree probibility):"
+     GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    
+     <TextField fx:id="dProb"
+     GridPane.rowIndex="0" GridPane.columnIndex="1"/
+    
+     <Label text="g (catch on fire from neighbor probibility):"
+     GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    
+     <TextField fx:id="gProb"
+     GridPane.rowIndex="1" GridPane.columnIndex="1"/
+     
+     <Label text="f (catch on fire spontaneously probibility):"
+     GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+    
+     <TextField fx:id="fProb"
+     GridPane.rowIndex="2" GridPane.columnIndex="1"/
+     
+     <Label text="p (grow tree in empty cell probibility):"
+     GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+    
+     <TextField fx:id="pProb"
+     GridPane.rowIndex="3" GridPane.columnIndex="1"/
+     
+     <Button fx:id="startGameBtn" text="Start Game" onAction="#startGame"/>
+     
+     <Button fx:id="exitBtn" text="Exit"/>
+</GridPane>
