@@ -14,6 +14,18 @@
      -fx-background-color: linear-gradient(#e6b800, #ffaa00);
 }
 
+.text-field {
+   -fx-font-family: "Quicksand";
+   -fx-font-size: 18;
+   -fx-padding: 1,1,1,1;
+   -fx-border-color: black;
+   -fx-border-width: 2;
+   -fx-border-radius: 1;
+   -fx-border: gone;
+   -fx-background-color: white;
+   -fx-text-fill: black;
+}
+
 .choice-box .context-menu { -fx-background-color: black; }
 
 .choice-box .menu-item:focused { -fx-background-color: orange; }

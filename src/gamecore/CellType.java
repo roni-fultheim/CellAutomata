@@ -1,5 +1,5 @@
 package gamecore;
 
-public enum ElementInBoard {
+public enum CellType {
     FIRE, TREE, EMPTY
 }

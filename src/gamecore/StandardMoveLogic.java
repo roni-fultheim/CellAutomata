@@ -27,7 +27,7 @@ public class StandardMoveLogic {
      * @param opponent other player of game
      */
     public void playMove(Position move, Player player, Board board, Player oposite) {
-        ElementInBoard c = player.getColor();
+        CellType c = player.getColor();
         // else - get list of last positions to flip in every direction
         ArrayList<Position> positions = this.checkDirections(board, move, c);
 
@@ -109,7 +109,7 @@ public class StandardMoveLogic {
      * @param board  board on which game is played
      */
     public void updateMoveOptions(Player player, Board board) {
-        ElementInBoard c = player.getColor();
+        CellType c = player.getColor();
 
         ArrayList<Position> possible = new ArrayList<Position>();
 
@@ -139,7 +139,7 @@ public class StandardMoveLogic {
      * @param colJumps jumps of columns
      * @return position of last square to flip, or given position if no squares should be flipped
      */
-    private Position lastToChange(Board b, Position prevStart, ElementInBoard c, int rowJumps, int colJumps) {
+    private Position lastToChange(Board b, Position prevStart, CellType c, int rowJumps, int colJumps) {
         // initialize p to first no
         Position p = new Position(prevStart.getRow() + rowJumps, prevStart.getColumn() + colJumps);
 
@@ -168,7 +168,7 @@ public class StandardMoveLogic {
      * @param c color to play
      * @return list of last positions to flip in a given direction
      */
-    private ArrayList<Position> checkDirections(Board b, Position prevStart, ElementInBoard c) {
+    private ArrayList<Position> checkDirections(Board b, Position prevStart, CellType c) {
         ArrayList<Position> positions = new ArrayList<Position>(8);
 
         // get last position in every direction

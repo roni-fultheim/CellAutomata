@@ -1,6 +1,7 @@
 package gamecore;
 
-import reversiap.ReversiListener;
+import reversiap.Listener;
+import reversiap.Randomizer;
 
 /**
  * Yael Hacmon, ID 313597897
@@ -14,39 +15,58 @@ import reversiap.ReversiListener;
  * Is responsible for playing the turns, knowing and notifying when the game ends, and printing
  * messages to the players.
  */
-public class GameManager {
-
-    // board of game
+public class AutomatonManager {
+    // board of automaton
     private Board board;
 
-    // Starting player is black by default.
-    private HumanPlayer currPlayer;
+    // extra board to do changes on
+    private CellType[][] extraMatrix;
 
-    // Opposite player is black by default.
-    private HumanPlayer oppPlayer;
+    // randomizer containing non-deterministic methods to make decisions by
+    private Randomizer rand;
 
-    private StandardMoveLogic logic;
-
-    private ReversiListener listener;
+    // listener to show local and global measurements
+    private Listener listener;
 
     /**
      * Constructor taking a board on which to play game, two players, and the logic of the moves.
      * @param b board of game
-     * @param black black player
-     * @param white white player
-     * @param log logic to handle moves
+     * @param r randomizer with the wanted probabilities to make decisions by
      * @param list listener of game
      */
-    public GameManager(Board b, HumanPlayer black, HumanPlayer white, StandardMoveLogic log, ReversiListener list) {
+    public AutomatonManager(Board b, Randomizer r, Listener list) {
         this.board = b;
-        this.currPlayer = black;
-        this.oppPlayer = white;
-        this.logic = log;
+        this.rand = r;
         this.listener = list;
 
-        this.logic.updateMoveOptions(this.currPlayer, this.board);
-        // show options
-        this.listener.updateMessage("Possible moves: " + this.currPlayer.getPossibleMoves().toString());
+        // initialize empty matrix
+        int size = this.board.getSize();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                this.extraMatrix[i][j] = CellType.EMPTY;
+            }
+        }
+
+        // TODO update starting status (using method)
+    }
+
+    public void playRound() {
+
+        // go over middle of board (without edge rows+columns)
+        int size = this.board.getSize() - 1;
+        for (int i = 1; i < size; i++) {
+            for (int j = 1; j < size; j++) {
+                // rule#1: a burning cell turns into an empty one
+                if (this.board.isCellOnFire(i, j)) {
+                    this.extraMatrix[i][j] = CellType.EMPTY;
+                } else if (this.board.isCellEmpty(i, j) && this.rand.grewTree()) {
+                    // rule#2: an empty cell grows a tree in a given probability
+                    this.extraMatrix[i][j] = CellType.TREE;
+                } // TODO
+            }
+        }
+
+        // TODO - edge row+columns
     }
 
     /**
@@ -67,8 +87,8 @@ public class GameManager {
         this.logic.playMove(move, this.currPlayer, this.board, this.oppPlayer);
 
         // show current scores
-        this.listener.changeXPlayerScore(this.board.countColor(ElementInBoard.FIRE));
-        this.listener.changeOPlayerScore(this.board.countColor(ElementInBoard.TREE));
+        this.listener.changeXPlayerScore(this.board.countColor(CellType.FIRE));
+        this.listener.changeOPlayerScore(this.board.countColor(CellType.TREE));
 
         // make sure game continues
         if (this.board.isBoardFull()) {
@@ -126,5 +146,10 @@ public class GameManager {
             // tie
             return ("We have a tie");
         }
+    }
+
+    private void updateMeasures() {
+        // TODO - count tree cells, count empty cells, divide
+        // TODO - count submatices of 10*10 which have 2/3 of trees/empty cells
     }
 }

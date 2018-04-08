@@ -41,7 +41,7 @@ public class MenuController implements Initializable {
             Scene scene = new Scene(root, 650, 500);
             scene.getStylesheets().add(this.getClass().getResource("reversiap.css").toExternalForm());
             Stage primaryStage = new Stage();
-            primaryStage.setTitle("Reversi Game");
+            primaryStage.setTitle("Cell Automata");
             primaryStage.setScene(scene);
             primaryStage.show();
             Stage s = (Stage) this.exitBtn.getScene().getWindow();

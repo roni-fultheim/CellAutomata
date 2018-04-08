@@ -1,39 +1,25 @@
 package reversiap;
 
-import java.io.IOException;
+import gamecore.AutomatonManager;
 import gamecore.Board;
-import gamecore.GameManager;
-import gamecore.Position;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
 public class BoardController extends GridPane {
     private Board board;
 
-    private Color xColor;
-
-    private Color oColor;
-
-    private GameManager manager;
+    private AutomatonManager manager;
 
     /**
-     * C'tor of board controller, taking colors of playes, game manager to manage game and board to play on
+     * C'tor of board controller, taking cell automata manager to manage game and board to play on
      * @param b board to play on
-     * @param pathX color of player 1
-     * @param pathO color of player 2
-     * @param gm game manager to handle game
+     * @param am cellular automaton manager to handle game
      */
-    public BoardController(Board b, String pathX, String pathO, GameManager gm) {
+    public BoardController(Board b, AutomatonManager am) {
         this.board = b;
-        this.xColor = this.parse(pathX);
-        this.oColor = this.parse(pathO);
-        this.manager = gm;
+        this.manager = am;
 
         this.setOnMouseClicked(event -> this.calcMouseClick(event));
     }
@@ -61,13 +47,6 @@ public class BoardController extends GridPane {
             }
         }
 
-        /*
-         * // draw circle, if cell is colored for (int i = 0; i < this.board.getSize(); i++) { for (int j = 0; j <
-         * this.board.getSize(); j++) { if (this.board.isCellBlack(i, j)) { Ellipse e = new Ellipse(cellWidth / 2,
-         * cellHeight / 2); e.setFill(this.xColor); e.setEffect(new InnerShadow()); this.add(e, j, i); } else if
-         * (this.board.isCellWhite(i, j)) { Ellipse e = new Ellipse(cellWidth / 2, cellHeight / 2);
-         * e.setFill(this.oColor); e.setEffect(new InnerShadow()); this.add(e, j, i); } } }
-         */
     }
 
     /**
@@ -75,42 +54,7 @@ public class BoardController extends GridPane {
      * @param event
      */
     public void calcMouseClick(MouseEvent event) {
-        int height = (int) this.getPrefHeight();
-        int width = (int) this.getPrefWidth();
-
-        int cellHeight = height / this.board.getSize();
-        int cellWidth = width / this.board.getSize();
-
-        // calculate and cast to int
-        int column = (int) event.getX() / cellWidth;
-        int row = (int) event.getY() / cellHeight;
-
-        // play turn
-        boolean gameContinues = this.manager.playTurn(new Position(row, column));
-
-        // draw board
-        this.draw();
-
-        if (!gameContinues) {
-            Alert alert = new Alert();
-            alert.display("Game over!", this.manager.winner());
-
-            // return to main menu
-            try {
-                VBox root = (VBox) FXMLLoader.load(this.getClass().getResource("menu.fxml"));
-                Scene scene = new Scene(root, 300, 350);
-                scene.getStylesheets().add(this.getClass().getResource("reversiap.css").toExternalForm());
-                Stage primaryStage = new Stage();
-                primaryStage.setTitle("Menu");
-                primaryStage.setScene(scene);
-                primaryStage.show();
-                Stage s = (Stage) this.getScene().getWindow();
-                s.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+        // TODO - endless loop with game rules, then drawinng the board, then sleeping
     }
 
     /**

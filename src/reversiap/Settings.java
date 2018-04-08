@@ -10,8 +10,8 @@ import java.io.UnsupportedEncodingException;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -43,39 +43,39 @@ public class Settings {
         layout.setHgap(12);
         layout.setId("set");
         // adding labels
-        Label colorFirst = new Label("First player color:");
-        colorFirst.setTextFill(Color.BLACK);
-        GridPane.setConstraints(colorFirst, 0, 0);
-        Label colorSecond = new Label("Second player color:");
-        colorSecond.setTextFill(Color.BLACK);
-        GridPane.setConstraints(colorSecond, 0, 1);
-        Label boardSize = new Label("Board size:");
-        boardSize.setTextFill(Color.BLACK);
-        GridPane.setConstraints(boardSize, 0, 2);
+        Label p = new Label("p (tree creation prob.):");
+        p.setTextFill(Color.BLACK);
+        GridPane.setConstraints(p, 0, 0);
+        Label g = new Label("g (catching fire from neighbor prob.):");
+        g.setTextFill(Color.BLACK);
+        GridPane.setConstraints(g, 0, 1);
+        Label f = new Label("f (catching fire randomly prob.):");
+        f.setTextFill(Color.BLACK);
+        GridPane.setConstraints(f, 0, 2);
+        Label d = new Label("d (start as tree prob.):");
+        d.setTextFill(Color.BLACK);
+        GridPane.setConstraints(d, 0, 3);
 
         // add choice box for the three
-        ChoiceBox<String> firstPlayer = new ChoiceBox<>();
-        GridPane.setConstraints(firstPlayer, 1, 0);
-        ChoiceBox<String> secondPlayer = new ChoiceBox<>();
-        GridPane.setConstraints(secondPlayer, 1, 1);
-        ChoiceBox<String> size = new ChoiceBox<>();
-        GridPane.setConstraints(size, 1, 2);
-
-        // the players choose their colors and the size of the board
-        firstPlayer.getItems().addAll("Black", "White", "Red", "Blue", "Green", "Yellow");
-        secondPlayer.getItems().addAll("Black", "White", "Red", "Blue", "Green", "Yellow");
-        size.getItems().addAll("4", "6", "8", "10", "12", "14", "16", "18", "20");
+        TextField pProb = new TextField();
+        GridPane.setConstraints(pProb, 1, 0);
+        TextField gProb = new TextField();
+        GridPane.setConstraints(gProb, 1, 1);
+        TextField fProb = new TextField();
+        GridPane.setConstraints(fProb, 1, 2);
+        TextField dProb = new TextField();
+        GridPane.setConstraints(dProb, 1, 3);
 
         // the button to confirm their choices
         Button confirm = new Button("Save");
         GridPane.setConstraints(confirm, 1, 10);
-        confirm.setOnAction(e -> this.writeChoice(firstPlayer, secondPlayer, size, window));
+        confirm.setOnAction(e -> this.writeChoice(pProb, gProb, fProb, dProb, window));
 
         // set position of messages to user
-        GridPane.setConstraints(this.message, 1, 8);
+        GridPane.setConstraints(this.message, 0, 8);
+        this.message.setWrapText(true);
 
-        layout.getChildren().addAll(colorFirst, colorSecond, boardSize, firstPlayer, secondPlayer, size, confirm,
-                this.message);
+        layout.getChildren().addAll(f, g, d, p, pProb, gProb, fProb, dProb, confirm, this.message);
         layout.setId("settings");
         Scene scene = new Scene(layout, 400, 320);
         scene.getStylesheets().addAll(this.getClass().getResource("reversiap.css").toExternalForm());
@@ -92,22 +92,23 @@ public class Settings {
      * @param size the size of the board
      * @param window the window to draw on
      */
-    private void writeChoice(ChoiceBox<String> firstPlayer, ChoiceBox<String> secondPlayer, ChoiceBox<String> size,
-            Stage window) {
-        String first = firstPlayer.getValue();
-        String second = secondPlayer.getValue();
-        String boardSize = size.getValue();
+    private void writeChoice(TextField pProb, TextField gProb, TextField fProb, TextField dProb, Stage window) {
+        Double p, g, f, d;
 
-        // make sure all values were filled
-        if ((first == null || second == null || boardSize == null)) {
-            this.message.setText("Missing a field");
+        try {
+            // parse the probabilities
+            p = Double.parseDouble(pProb.getText());
+            g = Double.parseDouble(gProb.getText());
+            f = Double.parseDouble(fProb.getText());
+            d = Double.parseDouble(dProb.getText());
+        } catch (Exception e) {
+            this.message.setText("All probabilities must be numbers");
             return;
         }
 
-        // make sure that colors are different
-        if (first.equals(second)) {
-            this.message.setText("Player colors must be different");
-            this.message.setTextFill(Color.RED);
+        // make sure all values were filled and between 0 to 1
+        if (!this.inRange(p) || !this.inRange(g) || !this.inRange(f) || !this.inRange(d)) {
+            this.message.setText("All probabilities must be between 0 and 1");
             return;
         }
 
@@ -128,13 +129,24 @@ public class Settings {
 
         BufferedWriter writer = new BufferedWriter(osw);
         try {
-            writer.write(first + "\n");
-            writer.write(second + "\n");
-            writer.write(boardSize + "\n");
+            // write the probabilities
+            writer.write(p + "\n");
+            writer.write(g + "\n");
+            writer.write(f + "\n");
+            writer.write(d + "\n");
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         window.close();
+    }
+
+    /**
+     * Checks if a given number is between 1 and 0
+     * @param num number given
+     * @return true if number is between 0 and 1, false otherwise
+     */
+    boolean inRange(double num) {
+        return (num >= 0 && num <= 1);
     }
 }

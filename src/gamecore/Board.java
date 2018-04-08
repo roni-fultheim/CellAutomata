@@ -1,7 +1,6 @@
 package gamecore;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 /**
  * Represents the board in the game. Can tell if is empty, can change the color of a given cell, can flip the
@@ -19,56 +18,50 @@ public class Board {
     /**
      * Matrix of game board - enum representing state of each position
      */
-    private ElementInBoard[][] gameBoard_;
+    private CellType[][] gameBoard_;
 
     /**
      * Size of board (length/width)
      */
     private int size_;
 
-    private List<Position> emptyCells_;
-
-    public Board(int size) {
+    /**
+     * C'tor taking size of board and tree starting probability
+     * @param size of board
+     * @param d probability of cell starting as a tree
+     */
+    public Board(int size, double d) {
         this.size_ = size;
-        this.gameBoard_ = new ElementInBoard[size][size];
-        this.emptyCells_ = new ArrayList<Position>();
-        Position p;
-        // initialize empty squares
+        this.gameBoard_ = new CellType[size][size];
+
+        // initialize board
         for (int i = 0; i < this.size_; i++) {
             for (int j = 0; j < this.size_; j++) {
-                // a cell will be empty by default
-                this.gameBoard_[i][j] = ElementInBoard.EMPTY;
-                // adding cell to list of empty cells
-                p = new Position(i, j);
-                this.emptyCells_.add(p);
+                // randomly set to tree (probability of d) or empty (prob. 1-d)
+                Random rand = new Random();
+                double randomNum = rand.nextDouble(); // return number between 0 to 1
+                // if number is smaller than or equal to d -> then make square a tree
+                if (randomNum <= d) {
+                    this.gameBoard_[i][j] = CellType.TREE;
+                } else {
+                    this.gameBoard_[i][j] = CellType.EMPTY;
+                }
             }
         }
-
-        p = new Position(this.size_ / 2 - 1, this.size_ / 2 - 1);
-        this.makeInColor(ElementInBoard.FIRE, p.getRow(), p.getColumn());
-        p = new Position(this.size_ / 2, this.size_ / 2);
-        this.makeInColor(ElementInBoard.FIRE, p.getRow(), p.getColumn());
-
-        // initialize black squares
-        p = new Position(this.size_ / 2 - 1, this.size_ / 2);
-        this.makeInColor(ElementInBoard.TREE, p.getRow(), p.getColumn());
-        p = new Position(this.size_ / 2, this.size_ / 2 - 1);
-        this.makeInColor(ElementInBoard.TREE, p.getRow(), p.getColumn());
     }
 
     public Board(Board b) {
         // copy all private elements of given board
         this.size_ = b.size_;
-        this.gameBoard_ = new ElementInBoard[this.size_][this.size_];
+        this.gameBoard_ = new CellType[this.size_][this.size_];
         for (int i = 0; i < this.size_; i++) {
             for (int j = 0; j < this.size_; j++) {
                 this.gameBoard_[i][j] = b.gameBoard_[i][j];
             }
         }
-        this.emptyCells_ = new ArrayList<Position>(b.emptyCells_);
     }
 
-    public ElementInBoard[][] getBoard() {
+    public CellType[][] getBoard() {
         return this.gameBoard_;
     }
 
@@ -78,17 +71,17 @@ public class Board {
 
     public boolean isCellTree(int row, int col) {
         Position pos = new Position(row, col);
-        return this.getCell(pos) == ElementInBoard.TREE;
+        return this.getCell(pos) == CellType.TREE;
     }
 
     public boolean isCellOnFire(int row, int col) {
         Position pos = new Position(row, col);
-        return this.getCell(pos) == ElementInBoard.FIRE;
+        return this.getCell(pos) == CellType.FIRE;
     }
 
     public boolean isCellEmpty(int row, int col) {
         Position pos = new Position(row, col);
-        return this.getCell(pos) == ElementInBoard.EMPTY;
+        return this.getCell(pos) == CellType.EMPTY;
     }
 
     /**
@@ -105,70 +98,12 @@ public class Board {
         return this.getCell(loc1) == this.getCell(loc2);
     }
 
-    public boolean compareCellColors(ElementInBoard c, Position loc) {
-        return (c != ElementInBoard.EMPTY && this.getCell(loc) == c);
+    public boolean compareCellColors(CellType c, Position loc) {
+        return (c != CellType.EMPTY && this.getCell(loc) == c);
     }
 
-    /**
-     * Flips the color at the given position, if non-empty.
-     * If color is black cell will become white, and vice versa.
-     * @param p position to flip
-     */
-    public void flipColor(Position p) {
-        // check that cell is not empty
-        if (!this.isCellEmpty(p.getRow(), p.getColumn())) {
-            // if cell is black
-            if (this.compareCellColors(ElementInBoard.BLACK, p)) {
-                // flip to white
-                this.gameBoard_[p.getRow()][p.getColumn()] = ElementInBoard.WHITE;
-            } else {
-                // else cell is white - flip to black
-                this.gameBoard_[p.getRow()][p.getColumn()] = ElementInBoard.BLACK;
-            }
-        }
-    }
-
-    public void makeInColor(ElementInBoard c, int row, int col) {
+    public void makeInColor(CellType c, int row, int col) {
         this.gameBoard_[row][col] = c;
-        // remove from list of empty cells
-        this.emptyCells_.remove(new Position(row, col));
-    }
-
-    public void flipColorInRange(Position prevStart, Position end, int rowJumps, int colJumps) {
-        // make sure both prevStart and end are in range of board
-        if (!this.isInBoardRange(prevStart) || !this.isInBoardRange(end)) {
-            return;
-        }
-
-        // avoid infinite loop in case of no jumps
-        if (rowJumps == 0 && colJumps == 0) {
-            return;
-        }
-
-        // iterate over board and change the location:
-        // initialize start of range
-        Position curr = new Position(prevStart.getRow(), prevStart.getColumn());
-
-        // if end location cannot be reached by given jumps - there is no way to know when to stop
-        // check if row/column jumps are 0 before using the % operation (undefined for 0)
-        if (((rowJumps != 0) && ((end.getRow() - curr.getRow()) % rowJumps != 0))
-                || ((colJumps) != 0 && ((end.getColumn() - curr.getColumn()) % colJumps != 0))) {
-            // return to avoid infinite loop
-            return;
-        }
-
-        // while location is still in given range - has not yet reached end
-        while (curr != end) {
-            // first move to next square (started with square previous to start)
-            curr.increment(rowJumps, colJumps);
-            // then flip next square
-            ElementInBoard e = this.getCell(curr);
-            if (e == ElementInBoard.WHITE) {
-                this.gameBoard_[curr.getRow()][curr.getColumn()] = ElementInBoard.BLACK;
-            } else if (e == ElementInBoard.BLACK) {
-                this.gameBoard_[curr.getRow()][curr.getColumn()] = ElementInBoard.WHITE;
-            }
-        }
     }
 
     public boolean isInBoardRange(Position loc) {
@@ -176,26 +111,37 @@ public class Board {
         return (loc.getRow() >= 0 && loc.getColumn() >= 0 && loc.getRow() < this.size_ && loc.getColumn() < this.size_);
     }
 
+    /**
+     * Checks if given coordinates are a cell at the board's edge
+     * @param i
+     * @param j
+     * @return
+     */
+    public boolean isEdge(int i, int j) {
+        return (i == 0 || i == (this.size_ - 1) || j == 0 || j == (this.size_ - 1));
+    }
+
     public boolean isEdge(Position loc) {
         return (loc.getRow() == 0 || loc.getRow() == (this.size_ - 1) || loc.getColumn() == 0
                 || loc.getColumn() == (this.size_ - 1));
     }
 
-    public boolean isBoardFull() {
-        // if list is empty - board is full
-        return this.emptyCells_.isEmpty();
-    }
-
-    public List<Position> emptyCells() {
-        return this.emptyCells_;
-    }
-
-    public ElementInBoard getCell(Position loc) {
+    public CellType getCell(Position loc) {
         return this.gameBoard_[loc.getRow()][loc.getColumn()];
     }
 
-    public void removeCellFromEmptyList(Position removalPoint) {
-        this.emptyCells_.remove(removalPoint);
+    /**
+     * Setter for the matrix, so that we can work on one and change the other in every step.
+     * Must do deep copy because of the Java referencing system
+     * @param matrix to swap to
+     */
+    public void setMatrix(CellType[][] matrix) {
+        for (int i = 0; i < this.getSize(); i++) {
+            for (int j = 0; j < this.getSize(); j++) {
+                // copy
+                this.gameBoard_[i][j] = matrix[i][j];
+            }
+        }
     }
 
     /**
@@ -205,7 +151,7 @@ public class Board {
      * @param c color of cells to count
      * @return number of cells with given color
      */
-    public int countColor(ElementInBoard c) {
+    public int countColor(CellType c) {
         // initialize variables
         int counter = 0;
 
