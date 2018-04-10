@@ -38,7 +38,7 @@ public class MenuController implements Initializable {
         try {
             // preparing the game screen
             HBox root = (HBox) FXMLLoader.load(this.getClass().getResource("ReversiGame.fxml"));
-            Scene scene = new Scene(root, 650, 500);
+            Scene scene = new Scene(root, 1000, 650);
             scene.getStylesheets().add(this.getClass().getResource("reversiap.css").toExternalForm());
             Stage primaryStage = new Stage();
             primaryStage.setTitle("Cell Automata");

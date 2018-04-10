@@ -50,84 +50,52 @@ public class Board {
         }
     }
 
-    public Board(Board b) {
-        // copy all private elements of given board
-        this.size_ = b.size_;
-        this.gameBoard_ = new CellType[this.size_][this.size_];
-        for (int i = 0; i < this.size_; i++) {
-            for (int j = 0; j < this.size_; j++) {
-                this.gameBoard_[i][j] = b.gameBoard_[i][j];
-            }
-        }
-    }
-
-    public CellType[][] getBoard() {
-        return this.gameBoard_;
-    }
-
+    /**
+     * returns size of board
+     * @return board size
+     */
     public int getSize() {
         return this.size_;
     }
 
+    /**
+     * Returns if given cell is a tree
+     * @param row of cell
+     * @param col of cell
+     * @return true if tree, false otherwise
+     */
     public boolean isCellTree(int row, int col) {
-        Position pos = new Position(row, col);
-        return this.getCell(pos) == CellType.TREE;
-    }
-
-    public boolean isCellOnFire(int row, int col) {
-        Position pos = new Position(row, col);
-        return this.getCell(pos) == CellType.FIRE;
-    }
-
-    public boolean isCellEmpty(int row, int col) {
-        Position pos = new Position(row, col);
-        return this.getCell(pos) == CellType.EMPTY;
+        return this.gameBoard_[row][col] == CellType.TREE;
     }
 
     /**
-     * Checks if a given position is in board range.
-     * @param p position to check
-     * @return true if in range, false otherwise
+     * Returns if given cell is on fire
+     * @param row of cell
+     * @param col of cell
+     * @return true if on fire, false otherwise
      */
-    public boolean inRange(Position p) {
-        return ((p.getRow() >= 0) && (p.getColumn() >= 0) && (p.getColumn() < this.getSize())
-                && (p.getRow() < this.getSize()));
+    public boolean isCellOnFire(int row, int col) {
+        return this.gameBoard_[row][col] == CellType.FIRE;
     }
 
-    public boolean compareCellColors(Position loc1, Position loc2) {
-        return this.getCell(loc1) == this.getCell(loc2);
-    }
-
-    public boolean compareCellColors(CellType c, Position loc) {
-        return (c != CellType.EMPTY && this.getCell(loc) == c);
-    }
-
-    public void makeInColor(CellType c, int row, int col) {
-        this.gameBoard_[row][col] = c;
-    }
-
-    public boolean isInBoardRange(Position loc) {
-        // check that row and column values are between 0 and board size-1
-        return (loc.getRow() >= 0 && loc.getColumn() >= 0 && loc.getRow() < this.size_ && loc.getColumn() < this.size_);
+    /**
+     * Returns if given cell is empty
+     * @param row of cell
+     * @param col of cell
+     * @return true if empty, false otherwise
+     */
+    public boolean isCellEmpty(int row, int col) {
+        return this.gameBoard_[row][col] == CellType.EMPTY;
     }
 
     /**
      * Checks if given coordinates are a cell at the board's edge
-     * @param i
-     * @param j
-     * @return
+     * @param i row
+     * @param j column
+     * @return true if a edge, false otherwise
      */
     public boolean isEdge(int i, int j) {
         return (i == 0 || i == (this.size_ - 1) || j == 0 || j == (this.size_ - 1));
-    }
-
-    public boolean isEdge(Position loc) {
-        return (loc.getRow() == 0 || loc.getRow() == (this.size_ - 1) || loc.getColumn() == 0
-                || loc.getColumn() == (this.size_ - 1));
-    }
-
-    public CellType getCell(Position loc) {
-        return this.gameBoard_[loc.getRow()][loc.getColumn()];
     }
 
     /**
@@ -145,21 +113,56 @@ public class Board {
     }
 
     /**
-     * Counts the number of cells with the given color on the given board.
-     *
-     * @param b full Board to count cells of
-     * @param c color of cells to count
-     * @return number of cells with given color
+     * Checks if one of a given cell's neighbors is on fire
+     * @param i row of cell
+     * @param j column of cell
+     * @return true if one of the neighbors is on fire, false if none
      */
-    public int countColor(CellType c) {
+    public boolean isNeighborOnFire(int i, int j) {
+        // if edge - there is s probelm, return
+        if (this.isEdge(i, j)) {
+            System.out.println("Problem: working on edge");
+            return false;
+        }
+
+        // up
+        if (this.isCellOnFire(i - 1, j)) {
+            return true;
+        }
+        // down
+        if (this.isCellOnFire(i + 1, j)) {
+            return true;
+        }
+        // left
+        if (this.isCellOnFire(i, j - 1)) {
+            return true;
+        }
+        // right
+        if (this.isCellOnFire(i, j + 1)) {
+            return true;
+        }
+
+        // none are burning - return false
+        return false;
+    }
+
+    /**
+     * Counts the number of cells with the given color in the given range (always a square).
+     * @param type of cells to count
+     * @param r starting row
+     * @param c starting column
+     * @param numCells square width (how many cells to count to each direction)
+     * @return number of cells with given color in wanted limits
+     */
+    public int countColor(CellType type, int r, int c, int numCells) {
         // initialize variables
         int counter = 0;
 
-        // go over board and count c-colored squares
-        for (int i = 0; i < this.getSize(); i++) {
-            for (int j = 0; j < this.getSize(); j++) {
+        // go over board and count type-colored squares
+        for (int i = r; i < r + numCells; i++) {
+            for (int j = c; j < c + numCells; j++) {
                 // if colors match
-                if (this.getCell(new Position(i, j)) == c) {
+                if (this.gameBoard_[i][j] == type) {
                     // increment counter
                     counter++;
                 }

@@ -21,9 +21,13 @@ public class BoardController extends GridPane {
         this.board = b;
         this.manager = am;
 
+        // set function to click
         this.setOnMouseClicked(event -> this.calcMouseClick(event));
     }
 
+    /**
+     * Draws board
+     */
     public void draw() {
         int height = (int) this.getPrefHeight();
         int width = (int) this.getPrefWidth();
@@ -41,44 +45,59 @@ public class BoardController extends GridPane {
                     // cell is empty
                     rect.setFill(Color.BISQUE);
                 }
-                rect.setStroke(Color.BLACK);
+                // TODO rect.setStroke(Color.BLACK);
 
                 this.add(rect, j, i);
             }
         }
 
+        // show borders
+        this.setGridLinesVisible(true);
+
     }
 
     /**
      * Handles the event of a player clicking on the board.
-     * @param event
+     * @param event mouse click
      */
     public void calcMouseClick(MouseEvent event) {
-        // TODO - endless loop with game rules, then drawinng the board, then sleeping
+        // run for 200 time units
+        int counter = 0;
+        while (counter < 200) {
+            // play one round of the game
+            this.manager.playRound();
+
+            // draw the current automaton
+            this.draw();
+
+            // sleep for 0.5 seconds
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
-     * Parses the string from color name into color object
-     * @param c sting with color name
-     * @return color represnted
+     * Plays the game
      */
-    private Color parse(String c) {
-        switch (c) {
-            case "Black":
-                return Color.BLACK;
-            case "White":
-                return Color.WHITE;
-            case "Red":
-                return Color.RED;
-            case "Yellow":
-                return Color.GOLD;
-            case "Green":
-                return Color.GREEN;
-            case "Blue":
-                return Color.BLUE;
-            default:
-                break;
+    public void startAutomaton() {
+        // run for 200 time units
+        int counter = 0;
+        while (counter < 200) {
+            // play one round of the game
+            this.manager.playRound();
+
+            // draw the current automaton
+            this.draw();
+
+            // sleep for 0.5 seconds
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
     }
 }

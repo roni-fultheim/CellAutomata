@@ -95,7 +95,8 @@ public class ReversiGameController implements Initializable {
         Listener listener = new Listener(this.globalMeasure, this.localMeasure, this.messages);
 
         // create board by given probability
-        Board board = new Board(100, d);
+        // size is 101*101 to allow for unchanging empty cells frame
+        Board board = new Board(101, d);
 
         // create randomizer
         Randomizer randomizer = new Randomizer(p, g, f);
@@ -105,10 +106,13 @@ public class ReversiGameController implements Initializable {
 
         // create board controller to show board
         BoardController boardController = new BoardController(board, game_manger);
-        boardController.setPrefWidth(480);
-        boardController.setPrefHeight(480);
+        boardController.setPrefWidth(700);
+        boardController.setPrefHeight(700);
         this.root.getChildren().add(0, boardController);
 
         boardController.draw();
+
+        // TODO
+        boardController.startAutomaton();
     }
 }

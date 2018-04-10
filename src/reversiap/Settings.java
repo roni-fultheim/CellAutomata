@@ -17,6 +17,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+ * Class of automaton setting screen
+ */
 public class Settings {
     Label message;
 
@@ -102,13 +105,13 @@ public class Settings {
             f = Double.parseDouble(fProb.getText());
             d = Double.parseDouble(dProb.getText());
         } catch (Exception e) {
-            this.message.setText("All probabilities must be numbers");
+            this.message.setText("Numbers only!");
             return;
         }
 
         // make sure all values were filled and between 0 to 1
         if (!this.inRange(p) || !this.inRange(g) || !this.inRange(f) || !this.inRange(d)) {
-            this.message.setText("All probabilities must be between 0 and 1");
+            this.message.setText("Number range: 0-1");
             return;
         }
 

@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 /**
- * Listens to the game, and observes the changes. Holds the lables that should be changed
+ * Listens to the cellular automaton, and observes the changes. Holds the lables that should be changed
  */
 public class Listener {
     // global measure = (#of tree cells)/(#of empty cells)
@@ -17,10 +17,6 @@ public class Listener {
 
     @FXML
     private Label messages;
-
-    private String player1;
-
-    private String player2;
 
     /**
      * Creates listener with given labels
@@ -52,10 +48,10 @@ public class Listener {
 
     /**
      * Updates current local measurement (#of 10*10 cells where at least 2/3 of the subboard's cells are empty or trees)
-     * @param measure new measurement
+     * @param local new measurement
      */
-    public void changeLocalMeasure(Double measure) {
-        this.localMeasure.setText("Local measure: " + measure);
+    public void changeLocalMeasure(int local) {
+        this.localMeasure.setText("Local measure: " + local);
     }
 
 }

@@ -8,9 +8,8 @@
 <HBox xmlns:fx="http://javafx.com/fxml/1" 
 fx:controller="reversiap.ReversiGameController" fx:id="root" spacing="5">
 	<VBox spacing ="20">
-        <Label fx:id = "currPlayerText" />
-        <Label fx:id = "whitePlayerScoreText" />
-        <Label fx:id = "blackPlayerScoreText" />
+        <Label fx:id = "globalMeasure" />
+        <Label fx:id = "localMeasure" />
         <Label fx:id = "messages" />
 	</VBox>
 </HBox>

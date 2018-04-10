@@ -6,6 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Main class of program
+ */
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
@@ -17,7 +20,7 @@ public class Main extends Application {
             scene.getStylesheets().add(this.getClass().getResource("reversiap.css").toExternalForm());
             // set stage to use scene
             primaryStage.setScene(scene);
-            primaryStage.setTitle("Welcome to Reversi!");
+            primaryStage.setTitle("Welcome to Cellular Automaton");
             // show stage
             primaryStage.show();
         } catch (Exception e) {
