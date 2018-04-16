@@ -1,81 +1,67 @@
-
 public class Main {
-    /*
-     * // examples public static final String ANSI_RESET = "\u001B[0m";
-     *
-     * public static final String ANSI_BLACK = "\u001B[30m";
-     *
-     * public static final String ANSI_RED = "\u001B[31m";
-     *
-     * public static final String ANSI_GREEN = "\u001B[32m";
-     *
-     * public static final String ANSI_YELLOW = "\u001B[33m";
-     *
-     * public static final String ANSI_BLUE = "\u001B[34m";
-     *
-     * public static final String ANSI_PURPLE = "\u001B[35m";
-     *
-     * public static final String ANSI_CYAN = "\u001B[36m";
-     *
-     * public static final String ANSI_WHITE = "\u001B[37m";
-     *
-     * public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
-     *
-     * public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-     *
-     * public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-     *
-     * public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
-     *
-     * public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
-     *
-     * public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
-     *
-     * public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
-     *
-     * public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
-     *
-     * // green text + background to create tree block (green) public static final String TREE_STRING =
-     * ANSI_GREEN_BACKGROUND + ANSI_GREEN + "T " + ANSI_RESET;
-     *
-     * public static final String EMPTY_STRING = ANSI_WHITE_BACKGROUND + ANSI_WHITE + "E " + ANSI_RESET;
-     *
-     * public static final String FIRE_STRING = ANSI_YELLOW_BACKGROUND + ANSI_YELLOW + "F " + ANSI_RESET;
-     */
 
     public static void main(String[] args) {
-        Cell[][] matrix = new Cell[100][100];
+        /** SETUP **/
 
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
-                matrix[i][j] = Cell.EMPTY;
+        // TODO - add parser that parses arguments from commandline and creates randomizer accordingly
+
+        // create randomizer - default values (0.5 all)
+        Randomizer randomizer = new Randomizer();
+
+        // create listener to follow measures
+        Listener list = new Listener();
+
+        // create automaton matrix
+        // size is 101*101 to allow a border of empty cells
+        int mSize = 101;
+        Cell[][] matrix = new Cell[mSize][mSize];
+
+        // initialize matrix
+        initMatrix(matrix, randomizer);
+
+        // create new manager
+        AutomatonManager manager = new AutomatonManager(matrix, randomizer, list);
+
+        /** START GAME **/
+        // start game: 200 rounds
+        for (int round = 0; round < 200; round++) {
+            // clear screen
+            clearScreen();
+
+            // show automaton
+            for (int i = 0; i < mSize; i++) {
+                for (int j = 0; j < mSize; j++) {
+                    // print cell
+                    System.out.print(matrix[i][j]);
+                }
+                // end line at end of row
+                System.out.println();
             }
-        }
 
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
-                System.out.print(matrix[i][j]);
+            // play next round (round i+1)
+            manager.playRound();
+
+            // sleep 0.6 seconds (so that user can see new state)
+            try {
+                Thread.sleep(600);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            System.out.println("");
+
         }
 
-        System.out.print(Cell.TREE);
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        // clear screen for last round
         clearScreen();
 
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
-                System.out.print(Cell.FIRE);
+        // show last round of the automaton, don't clear screen
+        for (int i = 0; i < mSize; i++) {
+            for (int j = 0; j < mSize; j++) {
+                System.out.print(matrix[i][j]);
             }
-            System.out.println("");
+            System.out.println();
         }
+
+        // TODO - show local/global measures / do something with them - maybe write to files?
 
     }
 
@@ -85,5 +71,48 @@ public class Main {
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
+    }
+
+    /**
+     * Initializes the given matrix by the given randomized - beautifier
+     * @param matrix to initialize
+     * @param rand randomizer with probabilites
+     */
+    public static void initMatrix(Cell[][] matrix, Randomizer rand) {
+        // get inner matrix size
+        int mSize = matrix.length - 1;
+
+        // initialize inner matrix (real automaton) to empty\tree according to given probability (in randomizer)
+        for (int i = 1; i < mSize; i++) {
+            for (int j = 1; j < mSize; j++) {
+                // randomly set to tree (probability of d) or empty (prob. 1-d)
+                if (rand.startAsTree()) {
+                    matrix[i][j] = Cell.TREE;
+                } else {
+                    matrix[i][j] = Cell.EMPTY;
+                }
+            }
+        }
+
+        // initialize border cells to empty
+        // return to outer matrix size
+        mSize++;
+
+        // top row
+        for (int i = 0; i < mSize; i++) {
+            matrix[0][i] = Cell.EMPTY;
+        }
+        // bottom row
+        for (int i = 0; i < mSize; i++) {
+            matrix[mSize - 1][i] = Cell.EMPTY;
+        }
+        // left column
+        for (int i = 0; i < mSize; i++) {
+            matrix[i][0] = Cell.EMPTY;
+        }
+        // right column
+        for (int i = 0; i < mSize; i++) {
+            matrix[i][mSize - 1] = Cell.EMPTY;
+        }
     }
 }
