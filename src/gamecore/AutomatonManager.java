@@ -83,7 +83,7 @@ public class AutomatonManager {
         this.board.setMatrix(this.extraMatrix);
 
         // update measures
-        this.updateMeasures();
+        // this.updateMeasures();
     }
 
     /**

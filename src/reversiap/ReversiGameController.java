@@ -11,6 +11,7 @@ import gamecore.AutomatonManager;
 import gamecore.Board;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -32,6 +33,9 @@ public class ReversiGameController implements Initializable {
 
     @FXML
     private Label messages;
+
+    @FXML
+    private Button start;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -106,13 +110,28 @@ public class ReversiGameController implements Initializable {
 
         // create board controller to show board
         BoardController boardController = new BoardController(board, game_manger);
-        boardController.setPrefWidth(700);
-        boardController.setPrefHeight(700);
+        boardController.setPrefWidth(650);
+        boardController.setPrefHeight(650);
         this.root.getChildren().add(0, boardController);
+
+        // TODO
+        // boardController.startAutomaton();
+
+        // set the button
+        this.start.setOnAction((event) -> {
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    boardController.startAutomaton();
+                }
+            });
+            thread.start();
+
+        });
 
         boardController.draw();
 
-        // TODO
-        boardController.startAutomaton();
+        System.out.println("after draw");
     }
 }

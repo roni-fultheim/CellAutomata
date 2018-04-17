@@ -11,5 +11,6 @@ fx:controller="reversiap.ReversiGameController" fx:id="root" spacing="5">
         <Label fx:id = "globalMeasure" />
         <Label fx:id = "localMeasure" />
         <Label fx:id = "messages" />
+        <Button fx:id="start" mnemonicParsing="false" prefHeight="50.0" prefWidth="170.0" text="Start" textAlignment="CENTER" />
 	</VBox>
 </HBox>

@@ -2,6 +2,7 @@ package reversiap;
 
 import gamecore.AutomatonManager;
 import gamecore.Board;
+import javafx.application.Platform;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -22,7 +23,7 @@ public class BoardController extends GridPane {
         this.manager = am;
 
         // set function to click
-        this.setOnMouseClicked(event -> this.calcMouseClick(event));
+        // TODO this.setOnMouseClicked(event -> this.calcMouseClick(event));
     }
 
     /**
@@ -52,7 +53,7 @@ public class BoardController extends GridPane {
         }
 
         // show borders
-        this.setGridLinesVisible(true);
+        // this.setGridLinesVisible(true);
 
     }
 
@@ -83,21 +84,31 @@ public class BoardController extends GridPane {
      * Plays the game
      */
     public void startAutomaton() {
+        System.out.println("in startAutomaton");
+
         // run for 200 time units
         int counter = 0;
         while (counter < 200) {
-            // play one round of the game
-            this.manager.playRound();
-
-            // draw the current automaton
-            this.draw();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    // draw the current automaton
+                    BoardController.this.draw();
+                }
+            });
 
             // sleep for 0.5 seconds
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            // play one round of the game
+            this.manager.playRound();
+
+            // increment counter
+            counter++;
         }
     }
 }
